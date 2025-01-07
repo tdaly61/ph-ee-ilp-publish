@@ -1,0 +1,50 @@
+plugins {
+    id 'maven-publish' 
+    id "com.jfrog.artifactory" version '5.+'
+}
+apply plugin: "com.jfrog.artifactory"
+
+group = 'org.mifos'
+version = '1.7.1'
+
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId = 'interop-ilp-conditions'
+            version = '1.7.1'
+            artifact file('interop-ilp-conditions-1.7.1.jar')
+        }
+    }
+}
+
+artifactory {
+    //contextUrl = 'http://40.82.204.22:8082/artifactory'
+    contextUrl = 'https://mifos.jfrog.io/artifactory'
+    publish {
+        repository {
+            repoKey = 'phee-gradle-local' // Use 'oss-release-local' for release versions
+            username = System.getenv('MIFOS_ARTIFACTORY_USER') 
+            password = System.getenv('MIFOS_ARTIFACTORY_TOKEN') 
+            // username = 'mifos'
+        }
+        defaults {
+            publications('maven')
+            publishArtifacts = true
+            publishPom = true
+            publishBuildInfo = false //  build info publishing
+        }
+    }
+    // Separate configuration for build info repository
+    // clientConfig.info.setBuildName('ph-ee-connector-common')
+    // clientConfig.info.setBuildNumber(System.currentTimeMillis().toString())
+    // clientConfig.info.setRepositoryKey('phee-gradle-local')  // Set build info repository
+    // clientConfig.info.setProject('phee') 
+    // clientConfig.info.setDeployBuildInfo(true)  // Deploy build info
+    // clientConfig.setIncludeEnvVars(false)
+    //clientConfig.logLevel = org.jfrog.build.extractor.clientConfiguration.ArtifactoryClientConfiguration.LogLevel.DEBUG
+}
+
+// artifactoryPublish {
+//     dependsOn jar
+// }
